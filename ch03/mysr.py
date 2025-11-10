@@ -1,35 +1,40 @@
-# Get rid of ALSA lib error messages in Linux
 import platform
-
-if  platform.system() == "Linux":
-    from ctypes import CFUNCTYPE, c_char_p, c_int, cdll
-    
-    # Define error handler
-    error_handler = CFUNCTYPE\
-	(None, c_char_p, c_int, c_char_p, c_int, c_char_p)
-    # Don't do anything if there is an error message
-    def py_error_handler(filename, line, function, err, fmt):
-      pass
-    # Pass to C
-    c_error_handler = error_handler(py_error_handler)
-    asound = cdll.LoadLibrary('libasound.so')
-    asound.snd_lib_error_set_handler(c_error_handler)
-	
-# Now define the voice_to_text() function for all platforms    
 import speech_recognition as sr
 
+if platform.system() == "Linux":
+    from ctypes import CFUNCTYPE, c_char_p, c_int, cdll
+
+    # Define error handler
+    error_handler = CFUNCTYPE(None, c_char_p, c_int, c_char_p, c_int, c_char_p)
+
+    # Don't do anything if there is an error message
+    def py_error_handler(filename, line, function, err, fmt):
+        pass
+
+    # Pass to C
+    c_error_handler = error_handler(py_error_handler)
+    asound = cdll.LoadLibrary("libasound.so")
+    asound.snd_lib_error_set_handler(c_error_handler)
+
 speech = sr.Recognizer()
+
+
+# Now define the voice_to_text() function for all platforms
 def voice_to_text():
-    voice_input = "" 
-    with sr.Microphone() as source:
+    voice_input = ""
+    with sr.Microphone(device_index=3) as source:
         speech.adjust_for_ambient_noise(source)
         try:
             audio = speech.listen(source)
             voice_input = speech.recognize_google(audio)
         except sr.UnknownValueError:
-            pass
+            print("Sorry, I did not get that")
         except sr.RequestError:
-            pass        
+            print("Network error")
         except sr.WaitTimeoutError:
-            pass
+            print("Waiting for input...")
     return voice_input
+
+
+if __name__ == "__main__":
+    print(voice_to_text())
