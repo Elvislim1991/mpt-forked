@@ -2,26 +2,11 @@ import os
 import pathlib
 import platform
 import speech_recognition as sr
+from mysr import voice_to_text
 
 speech = sr.Recognizer()
 
 directory = pathlib.Path.cwd()
-
-
-def voice_to_text():
-    voice_input = ""
-    with sr.Microphone() as source:
-        speech.adjust_for_ambient_noise(source)
-        try:
-            audio = speech.listen(source)
-            voice_input = speech.recognize_google(audio)
-        except sr.UnknownValueError:
-            pass
-        except sr.RequestError:
-            pass
-        except sr.WaitTimeoutError:
-            pass
-    return voice_input
 
 
 def open_file(filename):
@@ -35,7 +20,7 @@ def open_file(filename):
 
 while True:
     print("Python is listening...")
-    inp = voice_to_text()
+    inp = voice_to_text().lower()
     print(f"You just said {inp}.")
     if inp == "stop listening":
         print("Goodbye!")
@@ -48,5 +33,25 @@ while True:
     elif "open word" in inp:
         inp = inp.replace("open word ", "")
         myfile = f"{inp}.docx"
+        open_file(myfile)
+        continue
+    elif "open excel" in inp:
+        inp = inp.replace("open excel ", "")
+        myfile = f"{inp}.xlsx"
+        open_file(myfile)
+        continue
+    elif "open text" in inp:
+        inp = inp.replace("open text ", "")
+        myfile = f"{inp}.txt"
+        open_file(myfile)
+        continue
+    elif "open powerpoint" in inp:
+        inp = inp.replace("open powerpoint ", "")
+        myfile = f"{inp}.pptx"
+        open_file(myfile)
+        continue
+    elif "open mp3" in inp:
+        inp = inp.replace("open mp3 ", "")
+        myfile = f"{inp}.mp3"
         open_file(myfile)
         continue

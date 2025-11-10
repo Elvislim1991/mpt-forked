@@ -1,6 +1,7 @@
 import webbrowser
 
 import speech_recognition as sr
+from mysr import voice_to_text
 
 speech = sr.Recognizer()
 
@@ -10,25 +11,9 @@ for index, name in enumerate(sr.Microphone.list_microphone_names()):
     print(f"  {index}: {name}")
 
 
-def voice_to_text():
-    voice_input = ""
-    with sr.Microphone(device_index=3) as source:
-        speech.adjust_for_ambient_noise(source)
-        try:
-            audio = speech.listen(source)
-            voice_input = speech.recognize_google(audio)
-        except sr.UnknownValueError:
-            pass
-        except sr.RequestError:
-            print("Network error")
-        except sr.WaitTimeoutError:
-            pass
-    return voice_input
-
-
 while True:
     print("Python is listening...")
-    inp = voice_to_text()
+    inp = voice_to_text(troubleshoot=True)
     print(f"You just said {inp}.")
     if inp == "stop listening":
         print("Goodbye!")

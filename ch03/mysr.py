@@ -1,3 +1,4 @@
+from datetime import datetime
 import platform
 import speech_recognition as sr
 
@@ -20,13 +21,22 @@ speech = sr.Recognizer()
 
 
 # Now define the voice_to_text() function for all platforms
-def voice_to_text():
+def voice_to_text(troubleshoot=False):
     voice_input = ""
-    with sr.Microphone(device_index=3) as source:
+    with sr.Microphone(device_index=5) as source:
         speech.adjust_for_ambient_noise(source)
         try:
             audio = speech.listen(source)
+            if troubleshoot:
+                # Save audio for troubleshooting
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename = f"captured_audio_{timestamp}.wav"
+                with open(filename, "wb") as f:
+                    f.write(audio.get_wav_data())
+                print(f"Audio saved as {filename}")
+            print("Recognizing...")
             voice_input = speech.recognize_google(audio)
+            print("return from google")
         except sr.UnknownValueError:
             print("Sorry, I did not get that")
         except sr.RequestError:
